@@ -1,20 +1,35 @@
 
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 
-const db = new DB('database.db');
-db.close();
+export var sqliteClient: DB;
 
-// used for initially populating the database from csv files
-export const populate() => {
-
+export const databaseOpen = () => {
+    sqliteClient = new DB('database.db');
+    console.log('database connection opened');
 }
 
-export const init() => {
+export const databaseClose = () => {
+    sqliteClient.close();
+    console.log('database closed sucessfully');
+}
+
+// performs basic query on database using the input fields
+export const queryGraduateGroup = (fos: number, agegroup: number, gender: number) => sqliteClient.query(
+    'SELECT * FROM GraduateGroup WHERE fos = ? AND agegroup = ? AND gender = ?', [fos, agegroup, gender] 
+);
+
+// used for initially populating the database from csv files
+export const populate = () => {
+}
+
+
+export const init = () => {
 // CREATE TABLE GraduateGroup(
 //     id integer primary key autoincrement,
 //     gender integer,
 //     agegroup integer,
 //     fos integer,
+//     datayear integer,
 //     education integer,
 //     count integer,
 //     income integer

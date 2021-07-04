@@ -1,6 +1,6 @@
 
 ENTRY=index.ts
-DENO_PERMS=--allow-net
+DENO_PERMS=--allow-net --allow-read --allow-write
 
 .PHONY: run
 

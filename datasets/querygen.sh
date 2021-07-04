@@ -6,9 +6,6 @@
 # - $1 : name of csv file to be parsed
 # - $2 : location of database to be outputted to
 
-[ "$#" -ne 2 ] && { echo "Invalid Arguments"; exit 1; } 
-[ -f "$2" ] && { echo "File already exists"; exit 1; }
-
 # remotes quote from string
 trQuote() {
     echo "$1" | tr -d '"'
@@ -60,22 +57,26 @@ resolveFos() {
     esac
 }
 
+[ "$#" -ne 2 ] && { echo "Invalid Arguments"; exit 1; } 
+[ -f "$2" ] && { echo "File already exists"; exit 1; }
 
-echo 'INSERT INTO GraduateGroup (gender,agegroup,education,fos,datayear,count,income)'
+echo 'INSERT INTO GraduateGroup (gender,agegroup,education,fos,datayear,count,income) VALUES' >> "$2"
 
 while IFS='|' read -r gender age ed fos grad2010 grad2011 grad2012 grad2013 grad2014 grad2015 grad2016 wage2010 wage2011 wage2012 wage2013 wage2014 wage2015 wage2016; do
+    # look into bug where first gender is -1
     rGender=`resolveGender "$gender"`
     rAge=`resolveAge "$age"`
     rEd=`resolveEducation "$ed"`
     rFos=`resolveFos "$fos"`
+    # [ "$rGender" -ne -1 ] && [ "$rAge" -ne -1 ] && [ "$rEd" -ne -1 ] && [ "$rFos" -ne -1 ] || echo "invalid" 
     printf "\
-VALUES ($rGender,$rAge,$rEd,$rFos,2010,$grad2010,$wage2010),\n\
-VALUES ($rGender,$rAge,$rEd,$rFos,2011,$grad2011,$wage2011),\n\
-VALUES ($rGender,$rAge,$rEd,$rFos,2012,$grad2012,$wage2012),\n\
-VALUES ($rGender,$rAge,$rEd,$rFos,2013,$grad2013,$wage2013),\n\
-VALUES ($rGender,$rAge,$rEd,$rFos,2014,$grad2014,$wage2014),\n\
-VALUES ($rGender,$rAge,$rEd,$rFos,2015,$grad2015,$wage2015),\n\
-VALUES ($rGender,$rAge,$rEd,$rFos,2016,$grad2016,$wage2016),\n";
+($rGender,$rAge,$rEd,$rFos,2010,$grad2010,$wage2010),\n\
+($rGender,$rAge,$rEd,$rFos,2011,$grad2011,$wage2011),\n\
+($rGender,$rAge,$rEd,$rFos,2012,$grad2012,$wage2012),\n\
+($rGender,$rAge,$rEd,$rFos,2013,$grad2013,$wage2013),\n\
+($rGender,$rAge,$rEd,$rFos,2014,$grad2014,$wage2014),\n\
+($rGender,$rAge,$rEd,$rFos,2015,$grad2015,$wage2015),\n\
+($rGender,$rAge,$rEd,$rFos,2016,$grad2016,$wage2016),\n" >> "$2";
 done < "$1"
 
-echo ';'
+echo ';' >> "$2"
