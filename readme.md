@@ -31,11 +31,14 @@ Now for the variables: Age group and Gender. I downloaded each combination of ag
 ### Parsing csv
 
 To be completely honest, the csv file Stats Canada provided was very disgusting to work with. Here's what I did to clean it up a bit
-- get rid of the header and footer that came in the file for some reason
-- remove leading commas from each line, so separate rows will be newline separated - %s/^,//g
-- using vim search and replace, replaced '..' and 'x' with -1   - %s/".."/"-1"/g and %s/"x"/"-1"/g
-- the commas in numbers were removed using the following regular expression - %s/\(\d\),\(\d\)/\1\2/g
-much better.
+- Get rid of the header and footer that came in the file for some reason
+- Remove leading commas from each line, so separate rows will be newline separated - %s/^,//g
+- Using vim search and replace, replaced '..' and 'x' with -1   - %s/".."/"-1"/g and %s/"x"/"-1"/g
+- The commas in numbers were removed using the following regular expression - %s/\(\d\),\(\d\)/\1\2/g
+- The name of the education level, with age group and gender was inserted at the beginning of each line. This way there is no need for headers, and we are confident each line is a valid data point
+- Switched to using | as delimiter instead of commas
+
+Much better now. In the future, this process can be easily automated using vim macros or a shell script, but it should do for now.
 
 ### Dealing with unknown / redacted values
 
@@ -43,7 +46,11 @@ The naive method would probably be to treat these values as zero. However, this 
 ```
 42000, 45000, x, 41000, x, x
 ```
-is it really safe to say that those years have median wages of zero? Of course not. A better method would probably to use the average values in those spots, so it interferes with the rest of the data as little as possible.
+is it really safe to say that those years have median wages of zero? Of course not. A better method would probably to use the average values in those spots, so it interferes with the rest of the data as little as possible. We will do this conversion whenever the user makes the request for data, in case we update our dataset gets updated in the future.
+
+### Populating the database for the first time
+
+Now we need to take our cleaned up csv and insert it into our sqlite3 database. In other words, we need to parse the csv, extract the data and construct a valid sql query that will insert the data.
 
 ## API
 
@@ -55,40 +62,42 @@ endpoint    | query params
 
 ### Types/Enums
 Gender
-    - 0: male
-    - 1: female 
+    * 0: male
+    * 1: female 
 Age Group
-    - 0: 15-34
-    - 1: 35-64
+    * 0: 15-34
+    * 1: 35-64
 Field of Study 
-    - 0: Education
-    - 1: Visual and performing arts, and communications technologies
-    - 2: Humanities
-    - 3: Social and behavioral sciences and law
-    - 4: Business, management and public administration
-    - 5: Physical and life sciences and technologies
-    - 6: Mathematics, computer and information sciences
-    - 7: Architecture, engineering, and related technologies
-    - 8: Agriculture, natural resources and conservation
-    - 9: Health and related fields
-    - 10: Personal, protective and transportation services
-    - 11: Other instructional programs
+    * 0: Education
+    * 1: Visual and performing arts, and communications technologies
+    * 2: Humanities
+    * 3: Social and behavioral sciences and law
+    * 4: Business, management and public administration
+    * 5: Physical and life sciences and technologies
+    * 6: Mathematics, computer and information sciences
+    * 7: Architecture, engineering, and related technologies
+    * 8: Agriculture, natural resources and conservation
+    * 9: Health and related fields
+    * 10: Personal, protective and transportation services
+    * 11: Other instructional programs
 Education Level
-    - 0: Career, technical or professional training certificate
-    - 1: Career, technical or professional training diploma
-    - 2: Undergraduate degree
-    - 3: Professional degree
-    - 4: Master's degree
-    - 5: Doctoral degree
+    * 0: Career, technical or professional training certificate
+    * 1: Career, technical or professional training diploma
+    * 2: Undergraduate degree
+    * 3: Professional degree
+    * 4: Master's degree
+    * 5: Doctoral degree
 
 ### Tables
-GraduateGroup Table
-===================
-id                               integer primary key
-(gender)     Gender              integer
-(agegroup)   Age Group           integer
-(fos)        Field of Study      integer
-(education)  Education Level     integer
-(count)      Group Count         integer
-(income)     Median Income       integer
+#### GraduateGroup Table
+Field      | Friendly Name     | Options
+-----------|-------------------|--------------------
+id         |                   | integer primary key
+gender     | Gender            | integer
+agegroup   | Age Group         | integer
+fos        | Field of Study    | integer
+education  | Education Level   | integer
+datayear   | Year of the data  | integer
+count      | Group Count       | integer
+income     | Median Income     | integer
 
