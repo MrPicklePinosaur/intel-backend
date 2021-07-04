@@ -14,8 +14,8 @@ export const databaseClose = () => {
 }
 
 // performs basic query on database using the input fields
-export const queryGraduateGroup = (fos: number, agegroup: number, gender: number) => sqliteClient.query(
-    'SELECT * FROM GraduateGroup WHERE fos = ? AND agegroup = ? AND gender = ?', [fos, agegroup, gender] 
+export const queryGraduateGroup = async (fos: number, agegroup: number, gender: number, education: number) => sqliteClient.query(
+    'SELECT * FROM GraduateGroup WHERE fos = ? AND agegroup = ? AND gender = ? AND education = ?', [fos, agegroup, gender, education] 
 );
 
 // used for initially populating the database from csv files

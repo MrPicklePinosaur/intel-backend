@@ -54,9 +54,14 @@ Now we need to take our cleaned up csv and insert it into our sqlite3 database. 
 
 ## API
 
-endpoint    | query params
-------------|-------------------
-/data       | ?age ?gender ?fos
+endpoint    | query params      | return
+------------|-------------------|------------------
+/data       | ?age ?gender ?fos | [
+            |                   |   {eduation,avg_income,avg_count}
+            |                   | ]  
+            |                   |  
+            |                   |
+            |                   |
 
 ## Database Format
 
@@ -97,7 +102,7 @@ gender     | Gender            | integer
 agegroup   | Age Group         | integer
 fos        | Field of Study    | integer
 education  | Education Level   | integer
-datayear   | Year of the data  | integer
 count      | Group Count       | integer
 income     | Median Income     | integer
+datayear   | Year of the data  | integer
 
