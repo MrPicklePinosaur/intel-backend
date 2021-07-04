@@ -11,7 +11,6 @@ app.get('/', (ctx: Context) => {
     ctx.string('しゃいませ！');
 });
 
-
 app.start({ port: port });
 console.log(`server started on port ${port}`);
 
