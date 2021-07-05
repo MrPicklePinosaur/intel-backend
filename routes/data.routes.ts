@@ -11,19 +11,24 @@ export const dataGroup = (g: Group) => {
 
 const dataEndpoint: HandlerFunc = async (ctx: Context) => {
     // first validate query
-    if (validate(ctx.queryParams, ['age','gender','fos']) === false) {
+    if (validateExist(ctx.queryParams, ['age','gender','fos']) === false) {
         throw new BadRequestException();
     }
+
+    // also need to validate query argument types (later)
+
+    const { age, gender, fos } = ctx.queryParams;
+    const ageGroup = (parseInt(age) < 35) ? 0 : 1;
 
     let response = [];
     // retrieve income for each education group
     for (let i = 0; i <= 5; i++ ) {
-        const res = [...await queryGraduateGroup(0, 0, 0, i)];
+        // make db request and correct invalid values
+        const res = [...await queryGraduateGroup(parseInt(fos), ageGroup, parseInt(gender), i)];
         const adjustedGroupCount = adjustInvalid(res.map(row => row[5]));
         const adjustedIncome = adjustInvalid(res.map(row => row[6]));
 
         response.push({
-            education: i,
             avg_income: adjustedIncome,
             avg_count: adjustedGroupCount 
         });
@@ -58,7 +63,7 @@ const adjustInvalid = (dataset: number[]) => {
 }
 
 // simple validator to check if object has all the required fields
-const validate = (obj: object, properties: string[]): boolean => {
+const validateExist = (obj: object, properties: string[]): boolean => {
     for (const prop of properties) {
         if (!obj.hasOwnProperty(prop)) return false;
     }

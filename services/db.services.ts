@@ -18,21 +18,16 @@ export const queryGraduateGroup = async (fos: number, agegroup: number, gender: 
     'SELECT * FROM GraduateGroup WHERE fos = ? AND agegroup = ? AND gender = ? AND education = ?', [fos, agegroup, gender, education] 
 );
 
-// used for initially populating the database from csv files
-export const populate = () => {
-}
-
-
-export const init = () => {
-// CREATE TABLE GraduateGroup(
-//     id integer primary key autoincrement,
-//     gender integer,
-//     agegroup integer,
-//     fos integer,
-//     datayear integer,
-//     education integer,
-//     count integer,
-//     income integer
-// );
-}
-
+// used to create table from scratch
+export const initGraduateGroup = async () => sqliteClient.query(
+    `CREATE TABLE GraduateGroup(
+        id integer primary key autoincrement,
+        gender integer,
+        agegroup integer,
+        fos integer,
+        datayear integer,
+        education integer,
+        count integer,
+        income integer
+    )`
+);

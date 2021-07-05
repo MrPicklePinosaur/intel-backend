@@ -1,10 +1,9 @@
 
 ## The Stack
 
-deno
-    Felt like trying something slightly new. Functionally it's practically the same as using node.
-sqlite3 db
-    since the project is intended to be run and tested locally, it's a better idea to use a database that also runs locally without the need of a running database service (like postgres or monogdb).
+deno: felt like trying something slightly new. Functionally it's practically the same as using node. The abc library was used to write the web server, as well as a sqlite library that allows for sql queries from within deno.
+
+sqlite3 db: since the project is intended to be run and tested locally, it's a better idea to use a database that also runs locally without the need of a running database service (like postgres or monogdb).
 
 ## Data Set Choices
 
@@ -50,48 +49,50 @@ is it really safe to say that those years have median wages of zero? Of course n
 
 ### Populating the database for the first time
 
-Now we need to take our cleaned up csv and insert it into our sqlite3 database. In other words, we need to parse the csv, extract the data and construct a valid sql query that will insert the data.
+Now we need to take our cleaned up csv and insert it into our sqlite3 database. In other words, we need to parse the csv, extract the data and construct a valid sql query that will insert the data. I wrote a single shellscript to accomplish the task, useage is as follows:
+```
+./querygen.sh [input csv] [output file]
+```
+then after, we can pipe the output into the sqlite command line utility:
+```
+cat [output file] | sqlite3 [database file]
+```
 
 ## API
 
 endpoint    | query params      | return
 ------------|-------------------|------------------
-/data       | ?age ?gender ?fos | [
-            |                   |   {eduation,avg_income,avg_count}
-            |                   | ]  
-            |                   |  
-            |                   |
-            |                   |
+/data       | ?age ?gender ?fos | [{avg\_income,avg\_count}] where index represents the education level
 
 ## Database Format
 
 ### Types/Enums
 Gender
-    * 0: male
-    * 1: female 
+    * 0 - male
+    * 1 - female 
 Age Group
-    * 0: 15-34
-    * 1: 35-64
+    * 0 - 15-34
+    * 1 - 35-64
 Field of Study 
-    * 0: Education
-    * 1: Visual and performing arts, and communications technologies
-    * 2: Humanities
-    * 3: Social and behavioral sciences and law
-    * 4: Business, management and public administration
-    * 5: Physical and life sciences and technologies
-    * 6: Mathematics, computer and information sciences
-    * 7: Architecture, engineering, and related technologies
-    * 8: Agriculture, natural resources and conservation
-    * 9: Health and related fields
-    * 10: Personal, protective and transportation services
-    * 11: Other instructional programs
+    * 0 - Education
+    * 1 - Visual and performing arts, and communications technologies
+    * 2 - Humanities
+    * 3 - Social and behavioral sciences and law
+    * 4 - Business, management and public administration
+    * 5 - Physical and life sciences and technologies
+    * 6 - Mathematics, computer and information sciences
+    * 7 - Architecture, engineering, and related technologies
+    * 8 - Agriculture, natural resources and conservation
+    * 9 - Health and related fields
+    * 10 - Personal, protective and transportation services
+    * 11 - Other instructional programs
 Education Level
-    * 0: Career, technical or professional training certificate
-    * 1: Career, technical or professional training diploma
-    * 2: Undergraduate degree
-    * 3: Professional degree
-    * 4: Master's degree
-    * 5: Doctoral degree
+    * 0 - Career, technical or professional training certificate
+    * 1 - Career, technical or professional training diploma
+    * 2 - Undergraduate degree
+    * 3 - Professional degree
+    * 4 - Master's degree
+    * 5 - Doctoral degree
 
 ### Tables
 #### GraduateGroup Table
